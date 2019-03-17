@@ -46,6 +46,12 @@ ament_target_dependencies(${PROJECT_NAME}
   "tf2"
   "tf2_ros"
   )
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
 install(TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
   )
