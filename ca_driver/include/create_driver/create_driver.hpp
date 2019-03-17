@@ -1,7 +1,7 @@
 // Copyright 2019 Jacob Perron and Yutaka Kondo
 
-#ifndef CREATE_DRIVER__CREATE_DRIVER_H_
-#define CREATE_DRIVER__CREATE_DRIVER_H_
+#ifndef CREATE_DRIVER__CREATE_DRIVER_HPP_
+#define CREATE_DRIVER__CREATE_DRIVER_HPP_
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/time.hpp>
@@ -125,4 +125,4 @@ public:
   ~CreateDriver();
 };
 
-#endif  // CREATE_DRIVER__CREATE_DRIVER_H_
+#endif  // CREATE_DRIVER__CREATE_DRIVER_HPP_

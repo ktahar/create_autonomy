@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-#include "create_driver/create_driver.h"
+#include "create_driver/create_driver.hpp"
 
 CreateDriver::CreateDriver(const std::string & name)
   : Node(name),
