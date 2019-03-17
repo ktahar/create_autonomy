@@ -30,7 +30,7 @@ include_directories(
   ${sensor_msgs_INCLUDE_DIRS}
   ${std_msgs_INCLUDE_DIRS}
   ${tf2_INCLUDE_DIRS}
-  )
+)
 
 add_executable(${PROJECT_NAME} src/create_driver.cpp)
 ament_target_dependencies(${PROJECT_NAME}
@@ -45,7 +45,7 @@ ament_target_dependencies(${PROJECT_NAME}
   "std_msgs"
   "tf2"
   "tf2_ros"
-  )
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -54,15 +54,15 @@ endif()
 
 install(TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
-  )
+)
 
 install(DIRECTORY include/${PROJECT_NAME}
   DESTINATION include/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h"
-  )
+)
 
 install(DIRECTORY config
   DESTINATION config
-  )
+)
 
 ament_package()
