@@ -1,8 +1,7 @@
-#pragma once
+// Copyright 2019 Jacob Perron and Yutaka Kondo
 
-#include <limits>
-#include <string>
-#include <memory>
+#ifndef CREATE_DRIVER__CREATE_DRIVER_H_
+#define CREATE_DRIVER__CREATE_DRIVER_H_
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/time.hpp>
@@ -18,6 +17,10 @@
 #include <std_msgs/msg/u_int8_multi_array.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 
+#include <limits>
+#include <string>
+#include <memory>
+
 #include "create/create.h"
 #include "ca_msgs/msg/charging_state.hpp"
 #include "ca_msgs/msg/mode.hpp"
@@ -26,7 +29,7 @@
 #include "ca_msgs/msg/play_song.hpp"
 
 static const double MAX_DBL = std::numeric_limits<double>::max();
-static const double COVARIANCE[36] = {1e-5, 1e-5, 0.0,     0.0,     0.0,     1e-5,  // NOLINT(whitespace/braces)
+static const double COVARIANCE[36] = {1e-5, 1e-5, 0.0,     0.0,     0.0,     1e-5,
                                       1e-5, 1e-5, 0.0,     0.0,     0.0,     1e-5,
                                       0.0,  0.0,  MAX_DBL, 0.0,     0.0,     0.0,
                                       0.0,  0.0,  0.0,     MAX_DBL, 0.0,     0.0,
@@ -121,3 +124,5 @@ public:
   explicit CreateDriver(const std::string & name);
   ~CreateDriver();
 };
+
+#endif  // CREATE_DRIVER__CREATE_DRIVER_H_

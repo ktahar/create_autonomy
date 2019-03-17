@@ -1,6 +1,12 @@
-#include <chrono>
+// Copyright 2019 Jacob Perron and Yutaka Kondo
+
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/transform_datatypes.h>
+
+#include <chrono>
+#include <memory>
+#include <string>
+
 #include "create_driver/create_driver.h"
 
 CreateDriver::CreateDriver(const std::string & name)
