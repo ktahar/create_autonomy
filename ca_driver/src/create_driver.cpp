@@ -25,20 +25,13 @@ CreateDriver::CreateDriver(const std::string & name)
   get_parameter_or<double>("loop_hz", loop_hz_, 10.0);
   get_parameter_or<bool>("publish_tf", publish_tf_, true);
 
-  if (robot_model_name == "ROOMBA_400")
-  {
+  if (robot_model_name == "ROOMBA_400") {
     model_ = create::RobotModel::ROOMBA_400;
-  }
-  else if (robot_model_name == "CREATE_1")
-  {
+  } else if (robot_model_name == "CREATE_1") {
     model_ = create::RobotModel::CREATE_1;
-  }
-  else if (robot_model_name == "CREATE_2")
-  {
+  } else if (robot_model_name == "CREATE_2") {
     model_ = create::RobotModel::CREATE_2;
-  }
-  else
-  {
+  } else {
     RCLCPP_FATAL(get_logger(), "[CREATE] Robot model \"%s\" is not known.",
                  robot_model_name.c_str());
     rclcpp::shutdown();
@@ -177,18 +170,12 @@ void CreateDriver::checkLEDCallback(const std_msgs::msg::Bool::SharedPtr msg)
 
 void CreateDriver::powerLEDCallback(const std_msgs::msg::UInt8MultiArray::SharedPtr msg)
 {
-  if (msg->data.empty())
-  {
+  if (msg->data.empty()) {
     RCLCPP_ERROR(get_logger(), "[CREATE] No values provided to set power LED");
-  }
-  else
-  {
-    if (msg->data.size() < 2)
-    {
+  } else {
+    if (msg->data.size() < 2) {
       robot_->setPowerLED(msg->data[0]);
-    }
-    else
-    {
+    } else {
       robot_->setPowerLED(msg->data[0], msg->data[1]);
     }
   }
@@ -197,24 +184,15 @@ void CreateDriver::powerLEDCallback(const std_msgs::msg::UInt8MultiArray::Shared
 void CreateDriver::setASCIICallback(const std_msgs::msg::UInt8MultiArray::SharedPtr msg)
 {
   bool result = false;
-  if (msg->data.empty())
-  {
+  if (msg->data.empty()) {
     RCLCPP_ERROR(get_logger(), "[CREATE] No ASCII digits provided");
-  }
-  else if (msg->data.size() < 2)
-  {
+  } else if (msg->data.size() < 2) {
     result = robot_->setDigitsASCII(msg->data[0], ' ', ' ', ' ');
-  }
-  else if (msg->data.size() < 3)
-  {
+  } else if (msg->data.size() < 3) {
     result = robot_->setDigitsASCII(msg->data[0], msg->data[1], ' ', ' ');
-  }
-  else if (msg->data.size() < 4)
-  {
+  } else if (msg->data.size() < 4) {
     result = robot_->setDigitsASCII(msg->data[0], msg->data[1], msg->data[2], ' ');
-  }
-  else
-  {
+  } else {
     result = robot_->setDigitsASCII(msg->data[0], msg->data[1], msg->data[2], msg->data[3]);
   }
 
@@ -229,7 +207,9 @@ void CreateDriver::dockCallback(const std_msgs::msg::Empty::SharedPtr msg)
   robot_->setMode(create::MODE_PASSIVE);
 
   if (model_.getVersion() <= create::V_2)
+  {
     usleep(1000000);  // Create 1 requires a delay (1 sec)
+  }
 
   // Call docking behaviour
   robot_->dock();
@@ -480,7 +460,9 @@ void CreateDriver::publishBumperInfo()
 void CreateDriver::publishWheeldrop()
 {
   if (robot_->isWheeldrop())
+  {
     wheeldrop_pub_->publish(empty_msg_);
+  }
 }
 
 int main(int argc, char** argv)
