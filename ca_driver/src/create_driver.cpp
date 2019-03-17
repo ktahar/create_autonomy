@@ -1,4 +1,4 @@
-// Copyright 2019 Jacob Perron and Yutaka Kondo
+// Copyright 2015 Jacob Perron (Autonomy Lab, Simon Fraser University)
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/transform_datatypes.h>

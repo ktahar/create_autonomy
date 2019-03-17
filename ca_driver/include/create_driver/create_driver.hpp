@@ -1,4 +1,4 @@
-// Copyright 2019 Jacob Perron and Yutaka Kondo
+// Copyright 2015 Jacob Perron (Autonomy Lab, Simon Fraser University)
 
 #ifndef CREATE_DRIVER__CREATE_DRIVER_HPP_
 #define CREATE_DRIVER__CREATE_DRIVER_HPP_
