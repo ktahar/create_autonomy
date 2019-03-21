@@ -29,12 +29,13 @@
 #include "ca_msgs/msg/play_song.hpp"
 
 static const double MAX_DBL = std::numeric_limits<double>::max();
-static const double COVARIANCE[36] = {1e-5, 1e-5, 0.0,     0.0,     0.0,     1e-5,
-                                      1e-5, 1e-5, 0.0,     0.0,     0.0,     1e-5,
-                                      0.0,  0.0,  MAX_DBL, 0.0,     0.0,     0.0,
-                                      0.0,  0.0,  0.0,     MAX_DBL, 0.0,     0.0,
-                                      0.0,  0.0,  0.0,     0.0,     MAX_DBL, 0.0,
-                                      1e-5, 1e-5, 0.0,     0.0,     0.0,     1e-5};
+static const double COVARIANCE[36] = {
+  1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5,
+  1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5,
+  0.0, 0.0, MAX_DBL, 0.0, 0.0, 0.0,
+  0.0, 0.0, 0.0, MAX_DBL, 0.0, 0.0,
+  0.0, 0.0, 0.0, 0.0, MAX_DBL, 0.0,
+  1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5};
 
 class CreateDriver : public rclcpp::Node
 {

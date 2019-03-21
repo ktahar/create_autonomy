@@ -10,9 +10,9 @@
 #include "create_driver/create_driver.hpp"
 
 CreateDriver::CreateDriver(const std::string & name)
-  : Node(name),
-    model_(create::RobotModel::CREATE_2),
-    ros_clock_(RCL_ROS_TIME)
+: Node(name),
+  model_(create::RobotModel::CREATE_2),
+  ros_clock_(RCL_ROS_TIME)
 {
   using namespace std::chrono_literals;
 
@@ -33,22 +33,21 @@ CreateDriver::CreateDriver(const std::string & name)
     model_ = create::RobotModel::CREATE_2;
   } else {
     RCLCPP_FATAL(get_logger(), "[CREATE] Robot model \"%s\" is not known.",
-                 robot_model_name.c_str());
+      robot_model_name.c_str());
     rclcpp::shutdown();
     return;
   }
 
   RCLCPP_INFO(get_logger(), "[CREATE] \"%s\" selected",
-              robot_model_name.c_str());
+    robot_model_name.c_str());
 
   get_parameter_or<int>("baud", baud_, model_.getBaud());
 
   robot_ = std::make_unique<create::Create>(model_);
 
-  if (!robot_->connect(dev_, baud_))
-  {
+  if (!robot_->connect(dev_, baud_)) {
     RCLCPP_FATAL(get_logger(),
-        "[CREATE] Failed to establish serial connection with Create.");
+      "[CREATE] Failed to establish serial connection with Create.");
     rclcpp::shutdown();
   }
 
@@ -59,7 +58,7 @@ CreateDriver::CreateDriver(const std::string & name)
 
   // Show robot's battery level
   RCLCPP_INFO(get_logger(), "[CREATE] Battery level %.2f %%",
-      (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
+    (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
 
   // Set frame_id's
   mode_msg_.header.frame_id = base_frame_;
@@ -76,36 +75,35 @@ CreateDriver::CreateDriver(const std::string & name)
   joint_state_msg_.name[0] = "left_wheel_joint";
   joint_state_msg_.name[1] = "right_wheel_joint";
 
-  // Populate intial covariances
-  for (int i = 0; i < 36; i++)
-  {
+  // Populate initial covariances
+  for (int i = 0; i < 36; i++) {
     odom_msg_.pose.covariance[i] = COVARIANCE[i];
     odom_msg_.twist.covariance[i] = COVARIANCE[i];
   }
 
   // Setup subscribers
   cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>(
-      "cmd_vel", std::bind(&CreateDriver::cmdVelCallback, this, std::placeholders::_1));
+    "cmd_vel", std::bind(&CreateDriver::cmdVelCallback, this, std::placeholders::_1));
   debris_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "debris_led", std::bind(&CreateDriver::debrisLEDCallback, this, std::placeholders::_1));
+    "debris_led", std::bind(&CreateDriver::debrisLEDCallback, this, std::placeholders::_1));
   spot_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "spot_led", std::bind(&CreateDriver::spotLEDCallback, this, std::placeholders::_1));
+    "spot_led", std::bind(&CreateDriver::spotLEDCallback, this, std::placeholders::_1));
   dock_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "dock_led", std::bind(&CreateDriver::dockLEDCallback, this, std::placeholders::_1));
+    "dock_led", std::bind(&CreateDriver::dockLEDCallback, this, std::placeholders::_1));
   check_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "check_led", std::bind(&CreateDriver::checkLEDCallback, this, std::placeholders::_1));
+    "check_led", std::bind(&CreateDriver::checkLEDCallback, this, std::placeholders::_1));
   power_led_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
-      "power_led", std::bind(&CreateDriver::powerLEDCallback, this, std::placeholders::_1));
+    "power_led", std::bind(&CreateDriver::powerLEDCallback, this, std::placeholders::_1));
   set_ascii_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
-      "set_ascii", std::bind(&CreateDriver::setASCIICallback, this, std::placeholders::_1));
+    "set_ascii", std::bind(&CreateDriver::setASCIICallback, this, std::placeholders::_1));
   dock_sub_ = create_subscription<std_msgs::msg::Empty>(
-      "dock", std::bind(&CreateDriver::dockCallback, this, std::placeholders::_1));
+    "dock", std::bind(&CreateDriver::dockCallback, this, std::placeholders::_1));
   undock_sub_ = create_subscription<std_msgs::msg::Empty>(
-      "undock", std::bind(&CreateDriver::undockCallback, this, std::placeholders::_1));
+    "undock", std::bind(&CreateDriver::undockCallback, this, std::placeholders::_1));
   define_song_sub_ = create_subscription<ca_msgs::msg::DefineSong>(
-      "define_song", std::bind(&CreateDriver::defineSongCallback, this, std::placeholders::_1));
+    "define_song", std::bind(&CreateDriver::defineSongCallback, this, std::placeholders::_1));
   play_song_sub_ = create_subscription<ca_msgs::msg::PlaySong>(
-      "play_song", std::bind(&CreateDriver::playSongCallback, this, std::placeholders::_1));
+    "play_song", std::bind(&CreateDriver::playSongCallback, this, std::placeholders::_1));
 
   // Setup publishers
   odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 30);
@@ -196,8 +194,7 @@ void CreateDriver::setASCIICallback(const std_msgs::msg::UInt8MultiArray::Shared
     result = robot_->setDigitsASCII(msg->data[0], msg->data[1], msg->data[2], msg->data[3]);
   }
 
-  if (!result)
-  {
+  if (!result) {
     RCLCPP_ERROR(get_logger(), "[CREATE] ASCII character out of range [32, 126]");
   }
 }
@@ -206,8 +203,7 @@ void CreateDriver::dockCallback(const std_msgs::msg::Empty::SharedPtr msg)
 {
   robot_->setMode(create::MODE_PASSIVE);
 
-  if (model_.getVersion() <= create::V_2)
-  {
+  if (model_.getVersion() <= create::V_2) {
     usleep(1000000);  // Create 1 requires a delay (1 sec)
   }
 
@@ -223,17 +219,17 @@ void CreateDriver::undockCallback(const std_msgs::msg::Empty::SharedPtr msg)
 
 void CreateDriver::defineSongCallback(const ca_msgs::msg::DefineSong::SharedPtr msg)
 {
-  if (!robot_->defineSong(msg->song, msg->length, &(msg->notes.front()), &(msg->durations.front())))
+  if (!robot_->defineSong(msg->song, msg->length, &(msg->notes.front()),
+    &(msg->durations.front())))
   {
     RCLCPP_ERROR(get_logger(), "[CREATE] Failed to define song %d of length %d",
-                 msg->song, msg->length);
+      msg->song, msg->length);
   }
 }
 
 void CreateDriver::playSongCallback(const ca_msgs::msg::PlaySong::SharedPtr msg)
 {
-  if (!robot_->playSong(msg->song))
-  {
+  if (!robot_->playSong(msg->song)) {
     RCLCPP_ERROR(get_logger(), "[CREATE] Failed to play song %d", msg->song);
   }
 }
@@ -250,8 +246,7 @@ void CreateDriver::update()
   publishWheeldrop();
 
   // If last velocity command was sent longer than latch duration, stop robot
-  if (ros_clock_.now() - last_cmd_vel_time_ >= rclcpp::Duration(latch_duration_))
-  {
+  if (ros_clock_.now() - last_cmd_vel_time_ >= rclcpp::Duration(latch_duration_)) {
     robot_->drive(0, 0);
   }
 }
@@ -297,8 +292,7 @@ void CreateDriver::publishOdom()
   odom_msg_.twist.covariance[31] = vel.covariance[7];
   odom_msg_.twist.covariance[35] = vel.covariance[8];
 
-  if (publish_tf_)
-  {
+  if (publish_tf_) {
     tf_odom_.header.stamp = ros_clock_.now();
     tf_odom_.transform.translation.x = pose.x;
     tf_odom_.transform.translation.y = pose.y;
@@ -342,8 +336,7 @@ void CreateDriver::publishBatteryInfo()
 
   const create::ChargingState charging_state = robot_->getChargingState();
   charging_state_msg_.header.stamp = ros_clock_.now();
-  switch (charging_state)
-  {
+  switch (charging_state) {
     case create::CHARGE_NONE:
       charging_state_msg_.state = ca_msgs::msg::ChargingState::CHARGE_NONE;
       break;
@@ -372,28 +365,22 @@ void CreateDriver::publishBatteryInfo()
 
 void CreateDriver::publishButtonPresses() const
 {
-  if (robot_->isCleanButtonPressed())
-  {
+  if (robot_->isCleanButtonPressed()) {
     clean_btn_pub_->publish(empty_msg_);
   }
-  if (robot_->isDayButtonPressed())
-  {
+  if (robot_->isDayButtonPressed()) {
     day_btn_pub_->publish(empty_msg_);
   }
-  if (robot_->isHourButtonPressed())
-  {
+  if (robot_->isHourButtonPressed()) {
     hour_btn_pub_->publish(empty_msg_);
   }
-  if (robot_->isMinButtonPressed())
-  {
+  if (robot_->isMinButtonPressed()) {
     min_btn_pub_->publish(empty_msg_);
   }
-  if (robot_->isDockButtonPressed())
-  {
+  if (robot_->isDockButtonPressed()) {
     dock_btn_pub_->publish(empty_msg_);
   }
-  if (robot_->isSpotButtonPressed())
-  {
+  if (robot_->isSpotButtonPressed()) {
     spot_btn_pub_->publish(empty_msg_);
   }
 }
@@ -410,8 +397,7 @@ void CreateDriver::publishMode()
 {
   const create::CreateMode mode = robot_->getMode();
   mode_msg_.header.stamp = ros_clock_.now();
-  switch (mode)
-  {
+  switch (mode) {
     case create::MODE_OFF:
       mode_msg_.mode = mode_msg_.MODE_OFF;
       break;
@@ -437,8 +423,7 @@ void CreateDriver::publishBumperInfo()
   bumper_msg_.is_left_pressed = robot_->isLeftBumper();
   bumper_msg_.is_right_pressed = robot_->isRightBumper();
 
-  if (model_.getVersion() >= create::V_3)
-  {
+  if (model_.getVersion() >= create::V_3) {
     bumper_msg_.is_light_left = robot_->isLightBumperLeft();
     bumper_msg_.is_light_front_left = robot_->isLightBumperFrontLeft();
     bumper_msg_.is_light_center_left = robot_->isLightBumperCenterLeft();
@@ -459,13 +444,12 @@ void CreateDriver::publishBumperInfo()
 
 void CreateDriver::publishWheeldrop()
 {
-  if (robot_->isWheeldrop())
-  {
+  if (robot_->isWheeldrop()) {
     wheeldrop_pub_->publish(empty_msg_);
   }
 }
 
-int main(int argc, char** argv)
+int main(int argc, char ** argv)
 {
   setvbuf(stdout, NULL, _IONBF, BUFSIZ);
   rclcpp::init(argc, argv);
