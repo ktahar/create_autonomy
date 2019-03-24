@@ -23,8 +23,6 @@ CreateDriver::CreateDriver(const std::string & name)
   loop_hz_(10.0),
   publish_tf_(true)
 {
-  using namespace std::chrono_literals;
-
   std::string robot_model_name = "CREATE_2";
 
   rclcpp::Parameter parameter;
@@ -70,23 +68,17 @@ CreateDriver::CreateDriver(const std::string & name)
   if (get_parameter("baud", parameter)) {
     baud_ = parameter.get_value<int>();
   }
+}
+
+CreateDriver::~CreateDriver()
+{
+}
+
+CallbackReturn CreateDriver::on_configure(const rclcpp_lifecycle::State &)
+{
+  using namespace std::chrono_literals;
 
   robot_ = std::make_unique<create::Create>(model_);
-
-  if (!robot_->connect(dev_, baud_)) {
-    RCLCPP_FATAL(get_logger(),
-      "[CREATE] Failed to establish serial connection with Create.");
-    rclcpp::shutdown();
-  }
-
-  RCLCPP_INFO(get_logger(), "[CREATE] Connection established.");
-
-  // Start in full control mode
-  robot_->setMode(create::MODE_FULL);
-
-  // Show robot's battery level
-  RCLCPP_INFO(get_logger(), "[CREATE] Battery level %.2f %%",
-    (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
 
   // Set frame_id's
   mode_msg_.header.frame_id = base_frame_;
@@ -158,30 +150,110 @@ CreateDriver::CreateDriver(const std::string & name)
       [this]() -> void {
         this->update();
       });
+  timer_->cancel();
 
   RCLCPP_INFO(get_logger(), "[CREATE] Ready.");
-}
 
-CreateDriver::~CreateDriver()
-{
-  RCLCPP_INFO(get_logger(), "[CREATE] Destruct sequence initiated.");
-  robot_->disconnect();
-}
-
-CallbackReturn CreateDriver::on_configure(const rclcpp_lifecycle::State &)
-{
+  return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn CreateDriver::on_activate(const rclcpp_lifecycle::State &)
 {
+  if (!robot_->connect(dev_, baud_)) {
+    RCLCPP_FATAL(get_logger(),
+                 "[CREATE] Failed to establish serial connection with Create.");
+    rclcpp::shutdown();
+  }
+
+  RCLCPP_INFO(get_logger(), "[CREATE] Connection established.");
+
+  // Start in full control mode
+  robot_->setMode(create::MODE_FULL);
+
+  // Show robot's battery level
+  RCLCPP_INFO(get_logger(), "[CREATE] Battery level %.2f %%",
+              (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
+
+  odom_pub_->on_activate();
+  clean_btn_pub_->on_activate();
+  day_btn_pub_->on_activate();
+  hour_btn_pub_->on_activate();
+  min_btn_pub_->on_activate();
+  dock_btn_pub_->on_activate();
+  spot_btn_pub_->on_activate();
+  voltage_pub_->on_activate();
+  current_pub_->on_activate();
+  charge_pub_->on_activate();
+  charge_ratio_pub_->on_activate();
+  capacity_pub_->on_activate();
+  temperature_pub_->on_activate();
+  charging_state_pub_->on_activate();
+  omni_char_pub_->on_activate();
+  mode_pub_->on_activate();
+  bumper_pub_->on_activate();
+  wheeldrop_pub_->on_activate();
+  wheel_joint_pub_->on_activate();
+
+  timer_->reset();
+
+  return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn CreateDriver::on_deactivate(const rclcpp_lifecycle::State &)
 {
+  timer_->cancel();
+
+  odom_pub_->on_deactivate();
+  clean_btn_pub_->on_deactivate();
+  day_btn_pub_->on_deactivate();
+  hour_btn_pub_->on_deactivate();
+  min_btn_pub_->on_deactivate();
+  dock_btn_pub_->on_deactivate();
+  spot_btn_pub_->on_deactivate();
+  voltage_pub_->on_deactivate();
+  current_pub_->on_deactivate();
+  charge_pub_->on_deactivate();
+  charge_ratio_pub_->on_deactivate();
+  capacity_pub_->on_deactivate();
+  temperature_pub_->on_deactivate();
+  charging_state_pub_->on_deactivate();
+  omni_char_pub_->on_deactivate();
+  mode_pub_->on_deactivate();
+  bumper_pub_->on_deactivate();
+  wheeldrop_pub_->on_deactivate();
+  wheel_joint_pub_->on_deactivate();
+
+  robot_->disconnect();
+  RCLCPP_INFO(get_logger(), "[CREATE] Connection terminated.");
+
+  return CallbackReturn::SUCCESS;
 }
 
 CallbackReturn CreateDriver::on_cleanup(const rclcpp_lifecycle::State &)
 {
+  timer_.reset();
+
+  odom_pub_.reset();
+  clean_btn_pub_.reset();
+  day_btn_pub_.reset();
+  hour_btn_pub_.reset();
+  min_btn_pub_.reset();
+  dock_btn_pub_.reset();
+  spot_btn_pub_.reset();
+  voltage_pub_.reset();
+  current_pub_.reset();
+  charge_pub_.reset();
+  charge_ratio_pub_.reset();
+  capacity_pub_.reset();
+  temperature_pub_.reset();
+  charging_state_pub_.reset();
+  omni_char_pub_.reset();
+  mode_pub_.reset();
+  bumper_pub_.reset();
+  wheeldrop_pub_.reset();
+  wheel_joint_pub_.reset();
+
+  return CallbackReturn::SUCCESS;
 }
 
 void CreateDriver::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
