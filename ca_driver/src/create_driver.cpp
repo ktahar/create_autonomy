@@ -250,6 +250,18 @@ CallbackReturn CreateDriver::on_cleanup(const rclcpp_lifecycle::State &)
   wheeldrop_pub_.reset();
   wheel_joint_pub_.reset();
 
+  cmd_vel_sub_.reset();
+  debris_led_sub_.reset();
+  spot_led_sub_.reset();
+  dock_led_sub_.reset();
+  check_led_sub_.reset();
+  power_led_sub_.reset();
+  set_ascii_sub_.reset();
+  dock_sub_.reset();
+  undock_sub_.reset();
+  define_song_sub_.reset();
+  play_song_sub_.reset();
+
   return CallbackReturn::SUCCESS;
 }
 
