@@ -109,25 +109,25 @@ protected:
   rclcpp::Subscription<ca_msgs::msg::DefineSong>::SharedPtr define_song_sub_;
   rclcpp::Subscription<ca_msgs::msg::PlaySong>::SharedPtr play_song_sub_;
 
-  rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr clean_btn_pub_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr day_btn_pub_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr hour_btn_pub_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr min_btn_pub_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr dock_btn_pub_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr spot_btn_pub_;
-  rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr voltage_pub_;
-  rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr current_pub_;
-  rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr charge_pub_;
-  rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr charge_ratio_pub_;
-  rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr capacity_pub_;
-  rclcpp::Publisher<std_msgs::msg::Int16>::SharedPtr temperature_pub_;
-  rclcpp::Publisher<ca_msgs::msg::ChargingState>::SharedPtr charging_state_pub_;
-  rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr omni_char_pub_;
-  rclcpp::Publisher<ca_msgs::msg::Mode>::SharedPtr mode_pub_;
-  rclcpp::Publisher<ca_msgs::msg::Bumper>::SharedPtr bumper_pub_;
-  rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr wheeldrop_pub_;
-  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr wheel_joint_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Empty>::SharedPtr clean_btn_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Empty>::SharedPtr day_btn_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Empty>::SharedPtr hour_btn_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Empty>::SharedPtr min_btn_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Empty>::SharedPtr dock_btn_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Empty>::SharedPtr spot_btn_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Float32>::SharedPtr voltage_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Float32>::SharedPtr current_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Float32>::SharedPtr charge_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Float32>::SharedPtr charge_ratio_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Float32>::SharedPtr capacity_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Int16>::SharedPtr temperature_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<ca_msgs::msg::ChargingState>::SharedPtr charging_state_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::UInt16>::SharedPtr omni_char_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<ca_msgs::msg::Mode>::SharedPtr mode_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<ca_msgs::msg::Bumper>::SharedPtr bumper_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Empty>::SharedPtr wheeldrop_pub_;
+  rclcpp_lifecycle::LifecyclePublisher<sensor_msgs::msg::JointState>::SharedPtr wheel_joint_pub_;
 
 public:
   explicit CreateDriver(const std::string & name);
