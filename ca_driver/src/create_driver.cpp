@@ -9,6 +9,9 @@
 
 #include "create_driver/create_driver.hpp"
 
+namespace create_autonomy
+{
+
 CreateDriver::CreateDriver(const std::string & name)
 : Node(name),
   model_(create::RobotModel::CREATE_2),
@@ -449,12 +452,14 @@ void CreateDriver::publishWheeldrop()
   }
 }
 
+}
+
 int main(int argc, char ** argv)
 {
   setvbuf(stdout, NULL, _IONBF, BUFSIZ);
   rclcpp::init(argc, argv);
 
-  auto node = std::make_shared<CreateDriver>("ca_driver");
+  auto node = std::make_shared<create_autonomy::CreateDriver>("ca_driver");
   rclcpp::spin(node);
   rclcpp::shutdown();
 

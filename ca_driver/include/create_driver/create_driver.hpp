@@ -28,6 +28,9 @@
 #include "ca_msgs/msg/define_song.hpp"
 #include "ca_msgs/msg/play_song.hpp"
 
+namespace create_autonomy
+{
+
 static const double MAX_DBL = std::numeric_limits<double>::max();
 static const double COVARIANCE[36] = {
   1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5,
@@ -125,5 +128,7 @@ public:
   explicit CreateDriver(const std::string & name);
   ~CreateDriver();
 };
+
+}
 
 #endif  // CREATE_DRIVER__CREATE_DRIVER_HPP_
