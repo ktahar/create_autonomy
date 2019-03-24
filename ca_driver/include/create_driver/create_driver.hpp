@@ -5,6 +5,8 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/time.hpp>
+#include <rclcpp_lifecycle/lifecycle_node.hpp>
+#include <rclcpp_lifecycle/lifecycle_publisher.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <nav_msgs/msg/odometry.hpp>
@@ -40,7 +42,7 @@ static const double COVARIANCE[36] = {
   0.0, 0.0, 0.0, 0.0, MAX_DBL, 0.0,
   1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5};
 
-class CreateDriver : public rclcpp::Node
+class CreateDriver : public rclcpp_lifecycle::LifecycleNode
 {
 private:
   std::unique_ptr<create::Create> robot_;

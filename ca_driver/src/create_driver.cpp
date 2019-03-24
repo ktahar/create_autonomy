@@ -13,20 +13,42 @@ namespace create_autonomy
 {
 
 CreateDriver::CreateDriver(const std::string & name)
-: Node(name),
+: LifecycleNode(name),
   model_(create::RobotModel::CREATE_2),
-  ros_clock_(RCL_ROS_TIME)
+  ros_clock_(RCL_ROS_TIME),
+  dev_("/dev/ttyUSB0"),
+  base_frame_("base_footprint"),
+  odom_frame_("odom"),
+  latch_duration_(0.2),
+  loop_hz_(10.0),
+  publish_tf_(true)
 {
   using namespace std::chrono_literals;
 
-  std::string robot_model_name;
-  get_parameter_or<std::string>("dev", dev_, "/dev/ttyUSB0");
-  get_parameter_or<std::string>("robot_model", robot_model_name, "CREATE_2");
-  get_parameter_or<std::string>("base_frame", base_frame_, "base_footprint");
-  get_parameter_or<std::string>("odom_frame", odom_frame_, "odom");
-  get_parameter_or<double>("latch_cmd_duration", latch_duration_, 0.2);
-  get_parameter_or<double>("loop_hz", loop_hz_, 10.0);
-  get_parameter_or<bool>("publish_tf", publish_tf_, true);
+  std::string robot_model_name = "CREATE_2";
+
+  rclcpp::Parameter parameter;
+  if (get_parameter("dev", parameter)) {
+    dev_ = parameter.get_value<std::string>();
+  }
+  if (get_parameter("robot_model", parameter)) {
+    robot_model_name = parameter.get_value<std::string>();
+  }
+  if (get_parameter("base_frame", parameter)) {
+    base_frame_ = parameter.get_value<std::string>();
+  }
+  if (get_parameter("odom_frame", parameter)) {
+    odom_frame_ = parameter.get_value<std::string>();
+  }
+  if (get_parameter("latch_cmd_duration", parameter)) {
+    latch_duration_ = parameter.get_value<double>();
+  }
+  if (get_parameter("loop_hz", parameter)) {
+    loop_hz_ = parameter.get_value<double>();
+  }
+  if (get_parameter("publish_tf", parameter)) {
+    publish_tf_ = parameter.get_value<bool>();
+  }
 
   if (robot_model_name == "ROOMBA_400") {
     model_ = create::RobotModel::ROOMBA_400;
@@ -44,7 +66,10 @@ CreateDriver::CreateDriver(const std::string & name)
   RCLCPP_INFO(get_logger(), "[CREATE] \"%s\" selected",
     robot_model_name.c_str());
 
-  get_parameter_or<int>("baud", baud_, model_.getBaud());
+  baud_ = model_.getBaud();
+  if (get_parameter("baud", parameter)) {
+    baud_ = parameter.get_value<int>();
+  }
 
   robot_ = std::make_unique<create::Create>(model_);
 
@@ -459,8 +484,10 @@ int main(int argc, char ** argv)
   setvbuf(stdout, NULL, _IONBF, BUFSIZ);
   rclcpp::init(argc, argv);
 
+  rclcpp::executors::SingleThreadedExecutor executor;
   auto node = std::make_shared<create_autonomy::CreateDriver>("ca_driver");
-  rclcpp::spin(node);
+  executor.add_node(node->get_node_base_interface());
+  executor.spin();
   rclcpp::shutdown();
 
   return 0;
