@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!-- format属性を2から3に更新 -->
 <package format="3">
   <name>ca_driver</name>
   <version>2.0.0</version>
@@ -7,17 +8,20 @@
   <maintainer email="jperron@sfu.ca">Jacob Perron</maintainer>
   <maintainer email="yutaka.kondo@youtalk.jp">Yutaka Kondo</maintainer>
 
+  <!-- licenseはApache License 2.0が好ましいが、本パッケージは元々BSDなため、変更せず -->
   <license>BSD</license>
 
   <url type="website">http://wiki.ros.org/ca_driver</url>
 
   <author email="jperron@sfu.ca">Jacob Perron</author>
 
+  <!-- パッケージビルドツールをament_cmakeに変更 -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <!-- 依存パッケージを列挙 -->
   <depend>ca_msgs</depend>
   <depend>diagnostic_msgs</depend>
-  <!-- <depend>diagnostic_updater</depend> -->
+  <!-- <depend>diagnostic_updater</depend> ROS2未対応なため、コメントアウト-->
   <depend>geometry_msgs</depend>
   <depend>libcreate</depend>
   <depend>nav_msgs</depend>
@@ -28,11 +32,14 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
 
+  <!-- 実行時のみの依存パッケージを列挙 -->
   <exec_depend>ca_description</exec_depend>
 
+  <!-- テスト時のみの依存パッケージを列挙 -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
+  <!-- パッケージの追加情報 -->
   <export>
     <build_type>ament_cmake</build_type>
   </export>
