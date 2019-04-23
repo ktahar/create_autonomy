@@ -158,7 +158,7 @@ CallbackReturn CreateDriver::on_activate(const rclcpp_lifecycle::State &)
 {
   if (!robot_->connect(dev_, baud_)) {
     RCLCPP_FATAL(get_logger(),
-                 "[CREATE] Failed to establish serial connection with Create.");
+      "[CREATE] Failed to establish serial connection with Create.");
     rclcpp::shutdown();
   }
 
@@ -169,7 +169,7 @@ CallbackReturn CreateDriver::on_activate(const rclcpp_lifecycle::State &)
 
   // Show robot's battery level
   RCLCPP_INFO(get_logger(), "[CREATE] Battery level %.2f %%",
-              (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
+    (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
 
   odom_pub_->on_activate();
   clean_btn_pub_->on_activate();
@@ -574,7 +574,7 @@ void CreateDriver::publishWheeldrop()
   }
 }
 
-}
+}  // namespace create_autonomy
 
 int main(int argc, char ** argv)
 {
