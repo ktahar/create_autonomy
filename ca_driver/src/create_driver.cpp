@@ -127,24 +127,24 @@ CallbackReturn CreateDriver::on_configure(const rclcpp_lifecycle::State &)
 
   // Setup publishers
   odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 30);
-  clean_btn_pub_ = create_publisher<std_msgs::msg::Empty>("clean_button");
-  day_btn_pub_ = create_publisher<std_msgs::msg::Empty>("day_button");
-  hour_btn_pub_ = create_publisher<std_msgs::msg::Empty>("hour_button");
-  min_btn_pub_ = create_publisher<std_msgs::msg::Empty>("minute_button");
-  dock_btn_pub_ = create_publisher<std_msgs::msg::Empty>("dock_button");
-  spot_btn_pub_ = create_publisher<std_msgs::msg::Empty>("spot_button");
-  voltage_pub_ = create_publisher<std_msgs::msg::Float32>("battery/voltage");
-  current_pub_ = create_publisher<std_msgs::msg::Float32>("battery/current");
-  charge_pub_ = create_publisher<std_msgs::msg::Float32>("battery/charge");
-  charge_ratio_pub_ = create_publisher<std_msgs::msg::Float32>("battery/charge_ratio");
-  capacity_pub_ = create_publisher<std_msgs::msg::Float32>("battery/capacity");
-  temperature_pub_ = create_publisher<std_msgs::msg::Int16>("battery/temperature");
-  charging_state_pub_ = create_publisher<ca_msgs::msg::ChargingState>("battery/charging_state");
-  omni_char_pub_ = create_publisher<std_msgs::msg::UInt16>("ir_omni");
-  mode_pub_ = create_publisher<ca_msgs::msg::Mode>("mode");
-  bumper_pub_ = create_publisher<ca_msgs::msg::Bumper>("bumper");
-  wheeldrop_pub_ = create_publisher<std_msgs::msg::Empty>("wheeldrop");
-  wheel_joint_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states");
+  clean_btn_pub_ = create_publisher<std_msgs::msg::Empty>("clean_button", 30);
+  day_btn_pub_ = create_publisher<std_msgs::msg::Empty>("day_button", 30);
+  hour_btn_pub_ = create_publisher<std_msgs::msg::Empty>("hour_button", 30);
+  min_btn_pub_ = create_publisher<std_msgs::msg::Empty>("minute_button", 30);
+  dock_btn_pub_ = create_publisher<std_msgs::msg::Empty>("dock_button", 30);
+  spot_btn_pub_ = create_publisher<std_msgs::msg::Empty>("spot_button", 30);
+  voltage_pub_ = create_publisher<std_msgs::msg::Float32>("battery/voltage", 30);
+  current_pub_ = create_publisher<std_msgs::msg::Float32>("battery/current", 30);
+  charge_pub_ = create_publisher<std_msgs::msg::Float32>("battery/charge", 30);
+  charge_ratio_pub_ = create_publisher<std_msgs::msg::Float32>("battery/charge_ratio", 30);
+  capacity_pub_ = create_publisher<std_msgs::msg::Float32>("battery/capacity", 30);
+  temperature_pub_ = create_publisher<std_msgs::msg::Int16>("battery/temperature", 30);
+  charging_state_pub_ = create_publisher<ca_msgs::msg::ChargingState>("battery/charging_state", 30);
+  omni_char_pub_ = create_publisher<std_msgs::msg::UInt16>("ir_omni", 30);
+  mode_pub_ = create_publisher<ca_msgs::msg::Mode>("mode", 30);
+  bumper_pub_ = create_publisher<ca_msgs::msg::Bumper>("bumper", 30);
+  wheeldrop_pub_ = create_publisher<std_msgs::msg::Empty>("wheeldrop", 30);
+  wheel_joint_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
 
   timer_ = create_wall_timer(100ms, std::bind(&CreateDriver::update, this));
   timer_->cancel();
@@ -261,6 +261,8 @@ CallbackReturn CreateDriver::on_cleanup(const rclcpp_lifecycle::State &)
   undock_sub_.reset();
   define_song_sub_.reset();
   play_song_sub_.reset();
+
+  robot_.reset();
 
   return CallbackReturn::SUCCESS;
 }

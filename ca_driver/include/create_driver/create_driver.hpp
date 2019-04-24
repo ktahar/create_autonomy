@@ -42,9 +42,6 @@ static const double COVARIANCE[36] = {
   0.0, 0.0, 0.0, 0.0, MAX_DBL, 0.0,
   1e-5, 1e-5, 0.0, 0.0, 0.0, 1e-5};
 
-using CallbackReturn =
-  rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
-
 class CreateDriver : public rclcpp_lifecycle::LifecycleNode
 {
 private:
@@ -132,6 +129,9 @@ protected:
 public:
   explicit CreateDriver(const std::string & name);
   ~CreateDriver();
+
+  using CallbackReturn =
+    rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
   CallbackReturn on_configure(const rclcpp_lifecycle::State &);
   CallbackReturn on_activate(const rclcpp_lifecycle::State &);
