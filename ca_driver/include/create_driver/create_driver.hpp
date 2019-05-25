@@ -47,7 +47,7 @@ class CreateDriver : public rclcpp_lifecycle::LifecycleNode
 private:
   std::unique_ptr<create::Create> robot_;
   create::RobotModel model_;
-  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::TimerBase::SharedPtr timer_;  // タイマー実行の管理
   std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
   ca_msgs::msg::Mode mode_msg_;
   ca_msgs::msg::ChargingState charging_state_msg_;
@@ -133,10 +133,10 @@ public:
   using CallbackReturn =
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
-  CallbackReturn on_configure(const rclcpp_lifecycle::State &);
-  CallbackReturn on_activate(const rclcpp_lifecycle::State &);
-  CallbackReturn on_deactivate(const rclcpp_lifecycle::State &);
-  CallbackReturn on_cleanup(const rclcpp_lifecycle::State &);
+  CallbackReturn on_configure(const rclcpp_lifecycle::State &) override;
+  CallbackReturn on_activate(const rclcpp_lifecycle::State &) override;
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State &) override;
+  CallbackReturn on_cleanup(const rclcpp_lifecycle::State &) override;
 };
 
 }  // namespace create_autonomy
