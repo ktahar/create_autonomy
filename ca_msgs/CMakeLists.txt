@@ -17,7 +17,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Mode.msg"
   "msg/PlaySong.msg"
   DEPENDENCIES std_msgs
-  )
+)
 
 ament_export_dependencies(rosidl_default_runtime)
 ament_package()
