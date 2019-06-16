@@ -49,20 +49,24 @@ ament_target_dependencies(${PROJECT_NAME}
   "tf2_ros"
 )
 
+# テスト設定
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# libディレクトリのインストール
 install(TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )
 
+# includeディレクトリのインストール
 install(DIRECTORY include/${PROJECT_NAME}
   DESTINATION include/${PROJECT_NAME}
-  FILES_MATCHING PATTERN "*.h"
+  FILES_MATCHING PATTERN "*.hpp"
 )
 
+# configディレクトリのインストール
 install(DIRECTORY config
   DESTINATION config
 )
