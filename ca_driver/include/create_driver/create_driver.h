@@ -56,7 +56,7 @@ private:
   std::string dev_;
   std::string base_frame_;
   std::string odom_frame_;
-  double latch_duration_;
+  rclcpp::Duration latch_duration_;
   double loop_hz_;
   bool publish_tf_;
   int baud_;

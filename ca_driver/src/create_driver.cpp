@@ -6,6 +6,7 @@
 CreateDriver::CreateDriver(const std::string & name)
   : Node(name)
   , model_(create::RobotModel::CREATE_2)
+  , latch_duration_{0}
 {
   using namespace std::chrono_literals;
 
@@ -15,7 +16,8 @@ CreateDriver::CreateDriver(const std::string & name)
   robot_model_name =  declare_parameter("robot_model", "CREATE_2");
   base_frame_ = declare_parameter("base_frame", "base_footprint");
   odom_frame_ = declare_parameter("odom_frame", "odom");
-  latch_duration_ = declare_parameter("latch_cmd_duration", 0.2);
+  latch_duration_ = rclcpp::Duration(std::chrono::duration<double>(
+          declare_parameter("latch_cmd_duration", 0.2)));
   loop_hz_ = declare_parameter("loop_hz", 10.0);
   publish_tf_ = declare_parameter("publish_tf", true);
 
@@ -266,7 +268,7 @@ void CreateDriver::update()
   publishWheeldrop();
 
   // If last velocity command was sent longer than latch duration, stop robot
-  if (now() - last_cmd_vel_time_ >= rclcpp::Duration(latch_duration_))
+  if (now() - last_cmd_vel_time_ >= latch_duration_)
   {
     robot_->drive(0, 0);
   }
