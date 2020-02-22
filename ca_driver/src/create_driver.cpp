@@ -4,20 +4,20 @@
 #include "create_driver/create_driver.h"
 
 CreateDriver::CreateDriver(const std::string & name)
-  : Node(name),
-    model_(create::RobotModel::CREATE_2),
-    ros_clock_(RCL_ROS_TIME)
+  : Node(name)
+  , model_(create::RobotModel::CREATE_2)
 {
   using namespace std::chrono_literals;
 
   std::string robot_model_name;
-  get_parameter_or<std::string>("dev", dev_, "/dev/ttyUSB0");
-  get_parameter_or<std::string>("robot_model", robot_model_name, "CREATE_2");
-  get_parameter_or<std::string>("base_frame", base_frame_, "base_footprint");
-  get_parameter_or<std::string>("odom_frame", odom_frame_, "odom");
-  get_parameter_or<double>("latch_cmd_duration", latch_duration_, 0.2);
-  get_parameter_or<double>("loop_hz", loop_hz_, 10.0);
-  get_parameter_or<bool>("publish_tf", publish_tf_, true);
+
+  dev_ = declare_parameter("dev", "/dev/ttyUSB0");
+  robot_model_name =  declare_parameter("robot_model", "CREATE_2");
+  base_frame_ = declare_parameter("base_frame", "base_footprint");
+  odom_frame_ = declare_parameter("odom_frame", "odom");
+  latch_duration_ = declare_parameter("latch_cmd_duration", 0.2);
+  loop_hz_ = declare_parameter("loop_hz", 10.0);
+  publish_tf_ = declare_parameter("publish_tf", true);
 
   if (robot_model_name == "ROOMBA_400")
   {
@@ -129,10 +129,12 @@ CreateDriver::CreateDriver(const std::string & name)
   wheeldrop_pub_ = create_publisher<std_msgs::msg::Empty>("wheeldrop");
   wheel_joint_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states");
 
-  timer_ = create_wall_timer(100ms,
-      [this]() -> void {
-        this->update();
-      });
+  tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(this);
+
+  last_cmd_vel_time_ = now();
+
+  timer_ = create_wall_timer(std::chrono::duration<double>(1.0 / loop_hz_),
+          std::bind(&CreateDriver::update, this));
 
   RCLCPP_INFO(get_logger(), "[CREATE] Ready.");
 }
@@ -146,7 +148,7 @@ CreateDriver::~CreateDriver()
 void CreateDriver::cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg)
 {
   robot_->drive(msg->linear.x, msg->angular.z);
-  last_cmd_vel_time_ = ros_clock_.now();
+  last_cmd_vel_time_ = now();
 }
 
 void CreateDriver::debrisLEDCallback(const std_msgs::msg::Bool::SharedPtr msg)
@@ -264,7 +266,7 @@ void CreateDriver::update()
   publishWheeldrop();
 
   // If last velocity command was sent longer than latch duration, stop robot
-  if (ros_clock_.now() - last_cmd_vel_time_ >= rclcpp::Duration(latch_duration_))
+  if (now() - last_cmd_vel_time_ >= rclcpp::Duration(latch_duration_))
   {
     robot_->drive(0, 0);
   }
@@ -278,7 +280,7 @@ void CreateDriver::publishOdom()
   // Populate position info
   tf2::Quaternion quat;
   quat.setRPY(0, 0, pose.yaw);
-  odom_msg_.header.stamp = ros_clock_.now();
+  odom_msg_.header.stamp = now();
   odom_msg_.pose.pose.position.x = pose.x;
   odom_msg_.pose.pose.position.y = pose.y;
   odom_msg_.pose.pose.orientation.x = quat.x();
@@ -313,7 +315,7 @@ void CreateDriver::publishOdom()
 
   if (publish_tf_)
   {
-    tf_odom_.header.stamp = ros_clock_.now();
+    tf_odom_.header.stamp = now();
     tf_odom_.transform.translation.x = pose.x;
     tf_odom_.transform.translation.y = pose.y;
     tf_odom_.transform.rotation.x = quat.x();
@@ -331,7 +333,7 @@ void CreateDriver::publishJointState()
   // Publish joint states
   double wheelRadius = model_.getWheelDiameter() / 2.0;
 
-  joint_state_msg_.header.stamp = ros_clock_.now();
+  joint_state_msg_.header.stamp = now();
   joint_state_msg_.position[0] = robot_->getLeftWheelDistance() / wheelRadius;
   joint_state_msg_.position[1] = robot_->getRightWheelDistance() / wheelRadius;
   joint_state_msg_.velocity[0] = robot_->getRequestedLeftWheelVel() / wheelRadius;
@@ -355,7 +357,7 @@ void CreateDriver::publishBatteryInfo()
   charge_ratio_pub_->publish(float32_msg_);
 
   const create::ChargingState charging_state = robot_->getChargingState();
-  charging_state_msg_.header.stamp = ros_clock_.now();
+  charging_state_msg_.header.stamp = now();
   switch (charging_state)
   {
     case create::CHARGE_NONE:
@@ -423,7 +425,7 @@ void CreateDriver::publishOmniChar()
 void CreateDriver::publishMode()
 {
   const create::CreateMode mode = robot_->getMode();
-  mode_msg_.header.stamp = ros_clock_.now();
+  mode_msg_.header.stamp = now();
   switch (mode)
   {
     case create::MODE_OFF:
@@ -438,6 +440,9 @@ void CreateDriver::publishMode()
     case create::MODE_FULL:
       mode_msg_.mode = mode_msg_.MODE_FULL;
       break;
+    case create::MODE_FOUR:
+      mode_msg_.mode = mode_msg_.MODE_FOUR;
+      break;
     default:
       RCLCPP_ERROR(get_logger(), "[CREATE] Unknown mode detected");
       break;
@@ -447,7 +452,7 @@ void CreateDriver::publishMode()
 
 void CreateDriver::publishBumperInfo()
 {
-  bumper_msg_.header.stamp = ros_clock_.now();
+  bumper_msg_.header.stamp = now();
   bumper_msg_.is_left_pressed = robot_->isLeftBumper();
   bumper_msg_.is_right_pressed = robot_->isRightBumper();
 

@@ -39,13 +39,12 @@ private:
   std::unique_ptr<create::Create> robot_;
   create::RobotModel model_;
   rclcpp::TimerBase::SharedPtr timer_;
-  std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
   ca_msgs::msg::Mode mode_msg_;
   ca_msgs::msg::ChargingState charging_state_msg_;
   ca_msgs::msg::Bumper bumper_msg_;
   nav_msgs::msg::Odometry odom_msg_;
   geometry_msgs::msg::TransformStamped tf_odom_;
-  rclcpp::Clock ros_clock_;
   rclcpp::Time last_cmd_vel_time_;
   std_msgs::msg::Empty empty_msg_;
   std_msgs::msg::Float32 float32_msg_;
