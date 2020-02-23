@@ -44,7 +44,7 @@ CreateDriver::CreateDriver(const std::string & name)
   RCLCPP_INFO(get_logger(), "[CREATE] \"%s\" selected",
               robot_model_name.c_str());
 
-  get_parameter_or<int>("baud", baud_, model_.getBaud());
+  baud_ = declare_parameter("baud", static_cast<int>(model_.getBaud()));
 
   robot_ = std::make_unique<create::Create>(model_);
 
