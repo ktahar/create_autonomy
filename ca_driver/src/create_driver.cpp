@@ -7,56 +7,48 @@ CreateDriver::CreateDriver(const std::string & name)
   : Node(name)
   , model_(create::RobotModel::CREATE_2)
   , latch_duration_{0}
-  , dev_{"/dev/ttyUSB0"}
-  , robot_model_name_{"CREATE_2"}
-  , base_frame_{"base_footprint"}
-  , odom_frame_{"odom"}
-  , loop_hz_{10.0}
-  , publish_tf_{true}
 {
   using namespace std::chrono_literals;
 
-  dev_ = declare_parameter("dev", dev_);
-  robot_model_name_ =  declare_parameter("robot_model", robot_model_name_);
-  base_frame_ = declare_parameter("base_frame", base_frame_);
-  odom_frame_ = declare_parameter("odom_frame", odom_frame_);
-  loop_hz_ = declare_parameter("loop_hz", loop_hz_);
-  publish_tf_ = declare_parameter("publish_tf", publish_tf_);
-  rclcpp::ParameterValue duration{0.2};
-  duration = declare_parameter("latch_cmd_duration", duration);
-  latch_duration_ = rclcpp::Duration(std::chrono::duration<double>(
-              duration.get<double>()));
+  std::string robot_model_name;
 
-  std::string model = robot_model_name_.get<std::string>();
-  if (model == "ROOMBA_400")
+  dev_ = declare_parameter("dev", "/dev/ttyUSB0");
+  robot_model_name =  declare_parameter("robot_model", "CREATE_2");
+  base_frame_ = declare_parameter("base_frame", "base_footprint");
+  odom_frame_ = declare_parameter("odom_frame", "odom");
+  latch_duration_ = rclcpp::Duration(std::chrono::duration<double>(
+          declare_parameter("latch_cmd_duration", 0.2)));
+  loop_hz_ = declare_parameter("loop_hz", 10.0);
+  publish_tf_ = declare_parameter("publish_tf", true);
+
+  if (robot_model_name == "ROOMBA_400")
   {
     model_ = create::RobotModel::ROOMBA_400;
   }
-  else if (model == "CREATE_1")
+  else if (robot_model_name == "CREATE_1")
   {
     model_ = create::RobotModel::CREATE_1;
   }
-  else if (model == "CREATE_2")
+  else if (robot_model_name == "CREATE_2")
   {
     model_ = create::RobotModel::CREATE_2;
   }
   else
   {
     RCLCPP_FATAL(get_logger(), "[CREATE] Robot model \"%s\" is not known.",
-                 model.c_str());
+                 robot_model_name.c_str());
     rclcpp::shutdown();
     return;
   }
 
   RCLCPP_INFO(get_logger(), "[CREATE] \"%s\" selected",
-              name.c_str());
+              robot_model_name.c_str());
 
-  baud_ = rclcpp::ParameterValue(static_cast<int>(model_.getBaud()));
-  baud_ = declare_parameter("baud", baud_);
+  get_parameter_or<int>("baud", baud_, model_.getBaud());
 
   robot_ = std::make_unique<create::Create>(model_);
 
-  if (!robot_->connect(dev_.get<std::string>(), baud_.get<int>()))
+  if (!robot_->connect(dev_, baud_))
   {
     RCLCPP_FATAL(get_logger(),
         "[CREATE] Failed to establish serial connection with Create.");
@@ -73,15 +65,13 @@ CreateDriver::CreateDriver(const std::string & name)
       (robot_->getBatteryCharge() / robot_->getBatteryCapacity()) * 100.0);
 
   // Set frame_id's
-  std::string base = base_frame_.get<std::string>();
-  std::string odom = odom_frame_.get<std::string>();
-  mode_msg_.header.frame_id = base;
-  bumper_msg_.header.frame_id = base;
-  charging_state_msg_.header.frame_id = base;
-  tf_odom_.header.frame_id = odom;
-  tf_odom_.child_frame_id = base;
-  odom_msg_.header.frame_id = odom;
-  odom_msg_.child_frame_id = base;
+  mode_msg_.header.frame_id = base_frame_;
+  bumper_msg_.header.frame_id = base_frame_;
+  charging_state_msg_.header.frame_id = base_frame_;
+  tf_odom_.header.frame_id = odom_frame_;
+  tf_odom_.child_frame_id = base_frame_;
+  odom_msg_.header.frame_id = odom_frame_;
+  odom_msg_.child_frame_id = base_frame_;
   joint_state_msg_.name.resize(2);
   joint_state_msg_.position.resize(2);
   joint_state_msg_.velocity.resize(2);
@@ -148,8 +138,7 @@ CreateDriver::CreateDriver(const std::string & name)
   last_cmd_vel_time_ = now();
   last_motor_time_ = now();
 
-  timer_ = create_wall_timer(
-          std::chrono::duration<double>(1.0 / loop_hz_.get<double>()),
+  timer_ = create_wall_timer(std::chrono::duration<double>(1.0 / loop_hz_),
           std::bind(&CreateDriver::update, this));
 
   RCLCPP_INFO(get_logger(), "[CREATE] Ready.");
@@ -339,7 +328,7 @@ void CreateDriver::publishOdom()
   odom_msg_.twist.covariance[31] = vel.covariance[7];
   odom_msg_.twist.covariance[35] = vel.covariance[8];
 
-  if (publish_tf_.get<bool>())
+  if (publish_tf_)
   {
     tf_odom_.header.stamp = now();
     tf_odom_.transform.translation.x = pose.x;

@@ -55,14 +55,13 @@ private:
   sensor_msgs::msg::JointState joint_state_msg_;
 
   // ROS params
-  rclcpp::ParameterValue dev_;
-  rclcpp::ParameterValue robot_model_name_;
-  rclcpp::ParameterValue base_frame_;
-  rclcpp::ParameterValue odom_frame_;
-  rclcpp::ParameterValue loop_hz_;
-  rclcpp::ParameterValue publish_tf_;
+  std::string dev_;
+  std::string base_frame_;
+  std::string odom_frame_;
   rclcpp::Duration latch_duration_;
-  rclcpp::ParameterValue baud_;
+  double loop_hz_;
+  bool publish_tf_;
+  int baud_;
 
   void cmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr msg);
   void debrisLEDCallback(const std_msgs::msg::Bool::SharedPtr msg);
