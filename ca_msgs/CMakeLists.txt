@@ -16,6 +16,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DefineSong.msg"
   "msg/Mode.msg"
   "msg/PlaySong.msg"
+  "msg/Motor.msg"
   DEPENDENCIES std_msgs
   )
 

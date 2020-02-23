@@ -24,6 +24,7 @@
 #include "ca_msgs/msg/bumper.hpp"
 #include "ca_msgs/msg/define_song.hpp"
 #include "ca_msgs/msg/play_song.hpp"
+#include "ca_msgs/msg/motor.hpp"
 
 static const double MAX_DBL = std::numeric_limits<double>::max();
 static const double COVARIANCE[36] = {1e-5, 1e-5, 0.0,     0.0,     0.0,     1e-5,  // NOLINT(whitespace/braces)
@@ -46,6 +47,7 @@ private:
   nav_msgs::msg::Odometry odom_msg_;
   geometry_msgs::msg::TransformStamped tf_odom_;
   rclcpp::Time last_cmd_vel_time_;
+  rclcpp::Time last_motor_time_;
   std_msgs::msg::Empty empty_msg_;
   std_msgs::msg::Float32 float32_msg_;
   std_msgs::msg::UInt16 uint16_msg_;
@@ -72,6 +74,7 @@ private:
   void undockCallback(const std_msgs::msg::Empty::SharedPtr msg);
   void defineSongCallback(const ca_msgs::msg::DefineSong::SharedPtr msg);
   void playSongCallback(const ca_msgs::msg::PlaySong::SharedPtr msg);
+  void motorCallback(const ca_msgs::msg::Motor::SharedPtr msg);
 
   void update();
   void publishOdom();
@@ -95,6 +98,7 @@ protected:
   rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr undock_sub_;
   rclcpp::Subscription<ca_msgs::msg::DefineSong>::SharedPtr define_song_sub_;
   rclcpp::Subscription<ca_msgs::msg::PlaySong>::SharedPtr play_song_sub_;
+  rclcpp::Subscription<ca_msgs::msg::Motor>::SharedPtr motor_sub_;
 
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
   rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr clean_btn_pub_;

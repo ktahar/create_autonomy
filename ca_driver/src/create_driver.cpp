@@ -109,6 +109,8 @@ CreateDriver::CreateDriver(const std::string & name)
       "define_song", std::bind(&CreateDriver::defineSongCallback, this, std::placeholders::_1));
   play_song_sub_ = create_subscription<ca_msgs::msg::PlaySong>(
       "play_song", std::bind(&CreateDriver::playSongCallback, this, std::placeholders::_1));
+  motor_sub_ = create_subscription<ca_msgs::msg::Motor>(
+      "motor", std::bind(&CreateDriver::motorCallback, this, std::placeholders::_1));
 
   // Setup publishers
   odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 30);
@@ -134,6 +136,7 @@ CreateDriver::CreateDriver(const std::string & name)
   tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(this);
 
   last_cmd_vel_time_ = now();
+  last_motor_time_ = now();
 
   timer_ = create_wall_timer(std::chrono::duration<double>(1.0 / loop_hz_),
           std::bind(&CreateDriver::update, this));
@@ -256,6 +259,12 @@ void CreateDriver::playSongCallback(const ca_msgs::msg::PlaySong::SharedPtr msg)
   }
 }
 
+void CreateDriver::motorCallback(const ca_msgs::msg::Motor::SharedPtr msg)
+{
+  robot_->setAllMotors(msg->main_brush, msg->side_brush, msg->vacuum);
+  last_motor_time_ = now();
+}
+
 void CreateDriver::update()
 {
   publishOdom();
@@ -271,6 +280,10 @@ void CreateDriver::update()
   if (now() - last_cmd_vel_time_ >= latch_duration_)
   {
     robot_->drive(0, 0);
+  }
+  if (now() - last_motor_time_ >= latch_duration_)
+  {
+    robot_->setAllMotors(0.0, 0.0, 0.0);
   }
 }
 
