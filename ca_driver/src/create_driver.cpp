@@ -87,51 +87,51 @@ CreateDriver::CreateDriver(const std::string & name)
   }
 
   // Setup subscribers
-  cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>(
-      "cmd_vel", std::bind(&CreateDriver::cmdVelCallback, this, std::placeholders::_1));
-  debris_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "debris_led", std::bind(&CreateDriver::debrisLEDCallback, this, std::placeholders::_1));
-  spot_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "spot_led", std::bind(&CreateDriver::spotLEDCallback, this, std::placeholders::_1));
-  dock_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "dock_led", std::bind(&CreateDriver::dockLEDCallback, this, std::placeholders::_1));
-  check_led_sub_ = create_subscription<std_msgs::msg::Bool>(
-      "check_led", std::bind(&CreateDriver::checkLEDCallback, this, std::placeholders::_1));
-  power_led_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
-      "power_led", std::bind(&CreateDriver::powerLEDCallback, this, std::placeholders::_1));
-  set_ascii_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
-      "set_ascii", std::bind(&CreateDriver::setASCIICallback, this, std::placeholders::_1));
-  dock_sub_ = create_subscription<std_msgs::msg::Empty>(
-      "dock", std::bind(&CreateDriver::dockCallback, this, std::placeholders::_1));
-  undock_sub_ = create_subscription<std_msgs::msg::Empty>(
-      "undock", std::bind(&CreateDriver::undockCallback, this, std::placeholders::_1));
-  define_song_sub_ = create_subscription<ca_msgs::msg::DefineSong>(
-      "define_song", std::bind(&CreateDriver::defineSongCallback, this, std::placeholders::_1));
-  play_song_sub_ = create_subscription<ca_msgs::msg::PlaySong>(
-      "play_song", std::bind(&CreateDriver::playSongCallback, this, std::placeholders::_1));
-  motor_sub_ = create_subscription<ca_msgs::msg::Motor>(
-      "motor", std::bind(&CreateDriver::motorCallback, this, std::placeholders::_1));
+  cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>("cmd_vel", rclcpp::QoS(1),
+          std::bind(&CreateDriver::cmdVelCallback, this, std::placeholders::_1));
+  debris_led_sub_ = create_subscription<std_msgs::msg::Bool>("debris_led", rclcpp::QoS(1),
+          std::bind(&CreateDriver::debrisLEDCallback, this, std::placeholders::_1));
+  spot_led_sub_ = create_subscription<std_msgs::msg::Bool>("spot_led", rclcpp::QoS(1),
+          std::bind(&CreateDriver::spotLEDCallback, this, std::placeholders::_1));
+  dock_led_sub_ = create_subscription<std_msgs::msg::Bool>("dock_led", rclcpp::QoS(1),
+          std::bind(&CreateDriver::dockLEDCallback, this, std::placeholders::_1));
+  check_led_sub_ = create_subscription<std_msgs::msg::Bool>("check_led", rclcpp::QoS(1),
+          std::bind(&CreateDriver::checkLEDCallback, this, std::placeholders::_1));
+  power_led_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>("power_led", rclcpp::QoS(1),
+          std::bind(&CreateDriver::powerLEDCallback, this, std::placeholders::_1));
+  set_ascii_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>("set_ascii", rclcpp::QoS(1),
+          std::bind(&CreateDriver::setASCIICallback, this, std::placeholders::_1));
+  dock_sub_ = create_subscription<std_msgs::msg::Empty>("dock", rclcpp::QoS(1),
+          std::bind(&CreateDriver::dockCallback, this, std::placeholders::_1));
+  undock_sub_ = create_subscription<std_msgs::msg::Empty>("undock", rclcpp::QoS(1),
+          std::bind(&CreateDriver::undockCallback, this, std::placeholders::_1));
+  define_song_sub_ = create_subscription<ca_msgs::msg::DefineSong>("define_song", rclcpp::QoS(1),
+          std::bind(&CreateDriver::defineSongCallback, this, std::placeholders::_1));
+  play_song_sub_ = create_subscription<ca_msgs::msg::PlaySong>("play_song", rclcpp::QoS(1),
+          std::bind(&CreateDriver::playSongCallback, this, std::placeholders::_1));
+  motor_sub_ = create_subscription<ca_msgs::msg::Motor>("motor", rclcpp::QoS(1),
+          std::bind(&CreateDriver::motorCallback, this, std::placeholders::_1));
 
   // Setup publishers
-  odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 30);
-  clean_btn_pub_ = create_publisher<std_msgs::msg::Empty>("clean_button");
-  day_btn_pub_ = create_publisher<std_msgs::msg::Empty>("day_button");
-  hour_btn_pub_ = create_publisher<std_msgs::msg::Empty>("hour_button");
-  min_btn_pub_ = create_publisher<std_msgs::msg::Empty>("minute_button");
-  dock_btn_pub_ = create_publisher<std_msgs::msg::Empty>("dock_button");
-  spot_btn_pub_ = create_publisher<std_msgs::msg::Empty>("spot_button");
-  voltage_pub_ = create_publisher<std_msgs::msg::Float32>("battery/voltage");
-  current_pub_ = create_publisher<std_msgs::msg::Float32>("battery/current");
-  charge_pub_ = create_publisher<std_msgs::msg::Float32>("battery/charge");
-  charge_ratio_pub_ = create_publisher<std_msgs::msg::Float32>("battery/charge_ratio");
-  capacity_pub_ = create_publisher<std_msgs::msg::Float32>("battery/capacity");
-  temperature_pub_ = create_publisher<std_msgs::msg::Int16>("battery/temperature");
-  charging_state_pub_ = create_publisher<ca_msgs::msg::ChargingState>("battery/charging_state");
-  omni_char_pub_ = create_publisher<std_msgs::msg::UInt16>("ir_omni");
-  mode_pub_ = create_publisher<ca_msgs::msg::Mode>("mode");
-  bumper_pub_ = create_publisher<ca_msgs::msg::Bumper>("bumper");
-  wheeldrop_pub_ = create_publisher<std_msgs::msg::Empty>("wheeldrop");
-  wheel_joint_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states");
+  odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", rclcpp::QoS(30));
+  clean_btn_pub_ = create_publisher<std_msgs::msg::Empty>("clean_button", rclcpp::QoS(1));
+  day_btn_pub_ = create_publisher<std_msgs::msg::Empty>("day_button", rclcpp::QoS(1));
+  hour_btn_pub_ = create_publisher<std_msgs::msg::Empty>("hour_button", rclcpp::QoS(1));
+  min_btn_pub_ = create_publisher<std_msgs::msg::Empty>("minute_button", rclcpp::QoS(1));
+  dock_btn_pub_ = create_publisher<std_msgs::msg::Empty>("dock_button", rclcpp::QoS(1));
+  spot_btn_pub_ = create_publisher<std_msgs::msg::Empty>("spot_button", rclcpp::QoS(1));
+  voltage_pub_ = create_publisher<std_msgs::msg::Float32>("battery/voltage", rclcpp::QoS(1));
+  current_pub_ = create_publisher<std_msgs::msg::Float32>("battery/current", rclcpp::QoS(1));
+  charge_pub_ = create_publisher<std_msgs::msg::Float32>("battery/charge", rclcpp::QoS(1));
+  charge_ratio_pub_ = create_publisher<std_msgs::msg::Float32>("battery/charge_ratio", rclcpp::QoS(1));
+  capacity_pub_ = create_publisher<std_msgs::msg::Float32>("battery/capacity", rclcpp::QoS(1));
+  temperature_pub_ = create_publisher<std_msgs::msg::Int16>("battery/temperature", rclcpp::QoS(1));
+  charging_state_pub_ = create_publisher<ca_msgs::msg::ChargingState>("battery/charging_state", rclcpp::QoS(1));
+  omni_char_pub_ = create_publisher<std_msgs::msg::UInt16>("ir_omni", rclcpp::QoS(1));
+  mode_pub_ = create_publisher<ca_msgs::msg::Mode>("mode", rclcpp::QoS(1));
+  bumper_pub_ = create_publisher<ca_msgs::msg::Bumper>("bumper", rclcpp::QoS(1));
+  wheeldrop_pub_ = create_publisher<std_msgs::msg::Empty>("wheeldrop", rclcpp::QoS(1));
+  wheel_joint_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states", rclcpp::QoS(1));
 
   tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(this);
 
